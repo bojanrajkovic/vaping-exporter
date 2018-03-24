@@ -1,0 +1,24 @@
+language: python
+python:
+    - "3.6"
+env:
+  global:
+    - secure: "0rUxk+bF1loCx/jf8ekwo8GbHSWsrZidxfxhExWgYlmADWmqBtvy9XhYWhMZaG+pPYws0JzMbIer/68V5badvZoNOFTfB/DRAiE5CelIogiLD5tKvb1/20beZYAqhFoy1xXFlTK70ib5B0tuNbfbv2lOqpf5oTwXa8GT5dBKYLtKlA1izfONLDRr/sUKH8Jk1jzNhdcDeF+HJ1tCYz1JKsPcoek3P2yx4fca8YW1ep4Yb2FmsIbNV/vybEKbpcy1SWWEDIBZ9H4+5XuBXiSFeTFN3jMFltUc7XMsmczmXg7UuDhWKdHGx9f339KEiRtudxkfXk/j9aJsCq0+tE8IOvgLXFsngTrmCG00RibwTifWlP1G6OAsGDTWdGjJOtMVLmzXNm6sVfYRw3ylCVVOqYBGHTYwz8ZDLDypxy8tOanIuqaMMddeqEwg3VXa2bDGNDbkeAaA+eJvASbP8iljDOaXy35ym2dCKmWxURJKSLUQFKQ1lmbXBIr1t22iZGX98rvMzusyjcNfXpDZ7GD2UePS7u70Sy/I9GAIVicVCcXo43Rk0CJqEsqjmmugnptMcj+ehKzigUlXU4Wtw/GjPICsvq05oyNnmrw3d5jvC9e1xacky/9rarQQT9T4bHVU4O/oC5cPNNUrUlAYV13KWqnkENjX0sRnzjVHXPeqjBs="
+    - secure: "Fo1VkCWzEIdWuR/tseqcPz4J1qoqy95jQI30CVxoOgNGE4A957xfGoWsfl/wII39IHNX8AfxqhUKGucT1ShXTSPPAiqWaQuTE12i75l1b90stdmh0hmfcYFr8SExAavbbc1UCX4cS7cuK83RT9qtJ5+lq85sEDbZTLF1OsQTg2dmEHm41hH3Ut82gNC7D2Azorsi2X/Oz/MwccASCf10OYgQ0z/BGqp7soJhFO+MMvq4EXlFt7+EG6o4W5Y51SlUJ5e8aeUUqoian1zdB82YwodgBhvGEOHtZMn+Lvq7n5PiikHLU8DaX9UEY/GyAIEZzZUvzcULKNieyOSktoQByRJZ8+jHfV260XZSOm3oJQpKpmEp5jlM4Dl8X6wb1IV+xSOihQ1S2gZQ3UwrBEq4ZB8bLOxVQQzzgK/tYgaK+RgB1dZN1AiGltSlR/Xz4eMcjf3DL2vvwWl/doqqYkWccu4jiVwJeq8JVIayDCdH+NRUr9VXR+7/YU5HootT625/q+IFQMAGe/HjVHU1kGlm7J+KZUBQx2qUxDA3xhl5b9G/e1/r1ZL6hSPjYyfo9djOiu2eWst3NDJ0wonBhdpYQ+R+uhu5S8CapDuTJl85sZELu90hzzukHlV2Q/ygyUEONoMF9tdh/oALDPG6WStPIZyIaPxPQS+MWnPjo0AEBUY="
+    - secure: "5Mr3Keo+SN31Mu/+sdYyvu27uGEdMcP591S6POAwbVdQANe0zrEpL0I/kfouQkOSz1SAHeNlKyN+4JRqg8SjsWxkxNB+R9djc0tBi7OsddIQPhAxR86dHBE9Xq9QbO4/JRofaC9+Vg3e1b/6G/xo7mfMIy4GE/z1uAr44Z6/upltqnijhzneKirAadX6m9lOu+Wz3t7K0Wpa8krfo57YyZqdEnDdRs3WTRjhQtgXTUxlvmR016gRaTXH6EkONdddRFqKbYM+623+c1xR+WyfxYiVsO4XzkXEIWEnKgZ9pkTI25sGWGy1VF3SxKCsff+3KZnDFFW04H7GtruPDr/KHrHzUmdK5cLYXhHIJZo+wtzz7gMl59zOCg8CmmKI6PzbZFq6zxlrg6eAhxgKVHTv8vm7XS39mVSh5nNMYgdKDh6XMX6kOmcvgK3RAhz4FxY1AyFAsUEVCvHiQK/sykvpcntI5puTz9YVt8Qg67XR+t/odZlrCsASCOMZDnM0PTGHtAArRKO9V88Eo/uVZIaJfaV/Faytvq4FidqJ9ImmQ5e434z3MitaDLRNv8RCkeCQBHsajLJyqm9nj0OU6ITeXV4o48pcqlATfeKzKXVWjqpBvfk8/dkLYVecTHIKmCbXmrOamxjr/Q5llZxmkUxJSIg+EVHWDrqekPX6YrN8gJk="
+install:
+    - pip install flake8
+script:
+    - flake8 prometheus.py
+    - docker build -t vaping-exporter:$(TRAVIS_BUILD_NUMBER) .
+    - docker tag vaping-exporter:$(TRAVIS_BUILD_NUMBER) vaping-exporter:latest
+after_success:
+  - |
+    # This is a master build, build and push our docker image.
+    if [ "x$TRAVIS_BRANCH" == "xmaster" ] && [ "x$TRAVIS_PULL_REQUEST" == "xfalse" ]; then
+      docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+      docker tag vaping-exporter:$(TRAVIS_BUILD_NUMBER) brajkovic/vaping-exporter:$(TRAVIS_BUILD_NUMBER)
+      docker push brajkovic/vaping-exporter:$(TRAVIS_BUILD_NUMBER)
+      docker tag vaping-exporter:latest brajkovic/vaping-exporter:latest
+      docker push brajkovic/vaping-exporter:latest
+    fi
