@@ -10,15 +10,15 @@ install:
     - pip install flake8
 script:
     - flake8 prometheus.py
-    - docker build -t vaping-exporter:$(TRAVIS_BUILD_NUMBER) .
-    - docker tag vaping-exporter:$(TRAVIS_BUILD_NUMBER) vaping-exporter:latest
+    - docker build -t vaping-exporter:$TRAVIS_BUILD_NUMBER .
+    - docker tag vaping-exporter:$TRAVIS_BUILD_NUMBER vaping-exporter:latest
 after_success:
   - |
     # This is a master build, build and push our docker image.
     if [ "x$TRAVIS_BRANCH" == "xmaster" ] && [ "x$TRAVIS_PULL_REQUEST" == "xfalse" ]; then
       docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
-      docker tag vaping-exporter:$(TRAVIS_BUILD_NUMBER) brajkovic/vaping-exporter:$(TRAVIS_BUILD_NUMBER)
-      docker push brajkovic/vaping-exporter:$(TRAVIS_BUILD_NUMBER)
+      docker tag vaping-exporter:$TRAVIS_BUILD_NUMBER brajkovic/vaping-exporter:$TRAVIS_BUILD_NUMBER
+      docker push brajkovic/vaping-exporter:$TRAVIS_BUILD_NUMBER
       docker tag vaping-exporter:latest brajkovic/vaping-exporter:latest
       docker push brajkovic/vaping-exporter:latest
     fi
