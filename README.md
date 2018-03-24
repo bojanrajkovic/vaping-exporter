@@ -1,5 +1,7 @@
 # vaping-exporter
 
+[![Build Status](https://travis-ci.org/bojanrajkovic/vaping-exporter.svg?branch=master)](https://travis-ci.org/bojanrajkovic/vaping-exporter)
+
 A Prometheus exporter for https://github.com/20c/vaping.
 
 ## How do I use it?
