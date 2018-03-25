@@ -1,0 +1,67 @@
+---
+apiVersion: "v1"
+kind: "Service"
+metadata:
+  name: vaping
+spec:
+  selector:
+    app: vaping
+  ports:
+    - port: 9099
+      targetPort: 9099
+      name: http
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vaping
+data:
+  config.yml: |
+    probes:
+      - name: latency
+        type: std_fping
+        output:
+          - prometheus
+        public_dns:
+          hosts:
+            - host: 8.8.8.8
+              name: Google DNS
+    plugins:
+      - name: std_fping
+        type: fping
+        count: 10
+        interval: 3s
+        output:
+          - prometheus
+      - name: prometheus
+        type: prometheus
+        port: 9099
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vaping
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vaping
+  template:
+    metadata:
+      name: vaping
+      labels:
+        app: vaping
+    spec:
+      containers:
+        - name: vaping
+          image: brajkovic/vaping-exporter:3
+          ports:
+            - containerPort: 9099
+          volumeMounts:
+            - name: "config"
+              mountPath: /vaping/config.yml
+              subPath: config.yml
+      volumes:
+        - name: "config"
+          configMap:
+            name: vaping
