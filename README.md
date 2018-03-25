@@ -83,5 +83,5 @@ hosts you're monitoring. It looks like this:
 
 ![Grafana Dashboard](https://volley.coderinserepeat.com/brajkovic/vaping-grafana.png)
 
-[kube]: ./kubernetes-example.yml
+[kube]: ./kubernetes-example.yaml
 [dash]: ./vaping-dashboard.json
